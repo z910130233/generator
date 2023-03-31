@@ -94,7 +94,7 @@ public final class FastAutoGenerator {
      * 控制台输入内容读取并打印提示信息
      *
      * @param message 提示信息
-     * @return String
+     * @return
      */
     public String scannerNext(String message) {
         System.out.println(message);
@@ -110,23 +110,7 @@ public final class FastAutoGenerator {
      * 全局配置
      *
      * @param consumer 自定义全局配置
-     * @return FastAutoGenerator
-     */
-    public FastAutoGenerator dataSourceConfig(Consumer<DataSourceConfig.Builder> consumer) {
-        consumer.accept(this.dataSourceConfigBuilder);
-        return this;
-    }
-
-    public FastAutoGenerator dataSourceConfig(BiConsumer<Function<String, String>, DataSourceConfig.Builder> biConsumer) {
-        biConsumer.accept(this::scannerNext, this.dataSourceConfigBuilder);
-        return this;
-    }
-
-    /**
-     * 全局配置
-     *
-     * @param consumer 自定义全局配置
-     * @return FastAutoGenerator
+     * @return
      */
     public FastAutoGenerator globalConfig(Consumer<GlobalConfig.Builder> consumer) {
         consumer.accept(this.globalConfigBuilder);
@@ -134,7 +118,7 @@ public final class FastAutoGenerator {
     }
 
     public FastAutoGenerator globalConfig(BiConsumer<Function<String, String>, GlobalConfig.Builder> biConsumer) {
-        biConsumer.accept(this::scannerNext, this.globalConfigBuilder);
+        biConsumer.accept(message -> scannerNext(message), this.globalConfigBuilder);
         return this;
     }
 
@@ -142,7 +126,7 @@ public final class FastAutoGenerator {
      * 包配置
      *
      * @param consumer 自定义包配置
-     * @return FastAutoGenerator
+     * @return
      */
     public FastAutoGenerator packageConfig(Consumer<PackageConfig.Builder> consumer) {
         consumer.accept(this.packageConfigBuilder);
@@ -150,7 +134,7 @@ public final class FastAutoGenerator {
     }
 
     public FastAutoGenerator packageConfig(BiConsumer<Function<String, String>, PackageConfig.Builder> biConsumer) {
-        biConsumer.accept(this::scannerNext, this.packageConfigBuilder);
+        biConsumer.accept(message -> scannerNext(message), this.packageConfigBuilder);
         return this;
     }
 
@@ -158,7 +142,7 @@ public final class FastAutoGenerator {
      * 策略配置
      *
      * @param consumer 自定义策略配置
-     * @return FastAutoGenerator
+     * @return
      */
     public FastAutoGenerator strategyConfig(Consumer<StrategyConfig.Builder> consumer) {
         consumer.accept(this.strategyConfigBuilder);
@@ -166,7 +150,7 @@ public final class FastAutoGenerator {
     }
 
     public FastAutoGenerator strategyConfig(BiConsumer<Function<String, String>, StrategyConfig.Builder> biConsumer) {
-        biConsumer.accept(this::scannerNext, this.strategyConfigBuilder);
+        biConsumer.accept(message -> scannerNext(message), this.strategyConfigBuilder);
         return this;
     }
 
@@ -174,7 +158,7 @@ public final class FastAutoGenerator {
      * 注入配置
      *
      * @param consumer 自定义注入配置
-     * @return FastAutoGenerator
+     * @return
      */
     public FastAutoGenerator injectionConfig(Consumer<InjectionConfig.Builder> consumer) {
         consumer.accept(this.injectionConfigBuilder);
@@ -182,7 +166,7 @@ public final class FastAutoGenerator {
     }
 
     public FastAutoGenerator injectionConfig(BiConsumer<Function<String, String>, InjectionConfig.Builder> biConsumer) {
-        biConsumer.accept(this::scannerNext, this.injectionConfigBuilder);
+        biConsumer.accept(message -> scannerNext(message), this.injectionConfigBuilder);
         return this;
     }
 
@@ -190,7 +174,7 @@ public final class FastAutoGenerator {
      * 模板配置
      *
      * @param consumer 自定义模板配置
-     * @return FastAutoGenerator
+     * @return
      */
     public FastAutoGenerator templateConfig(Consumer<TemplateConfig.Builder> consumer) {
         consumer.accept(this.templateConfigBuilder);
@@ -198,7 +182,7 @@ public final class FastAutoGenerator {
     }
 
     public FastAutoGenerator templateConfig(BiConsumer<Function<String, String>, TemplateConfig.Builder> biConsumer) {
-        biConsumer.accept(this::scannerNext, this.templateConfigBuilder);
+        biConsumer.accept(message -> scannerNext(message), this.templateConfigBuilder);
         return this;
     }
 
@@ -206,7 +190,7 @@ public final class FastAutoGenerator {
      * 模板引擎配置
      *
      * @param templateEngine 模板引擎
-     * @return FastAutoGenerator
+     * @return
      */
     public FastAutoGenerator templateEngine(AbstractTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;

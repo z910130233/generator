@@ -432,11 +432,7 @@ public class StrategyConfig {
          * @since 3.5.0
          */
         public Builder addTablePrefix(@NotNull String... tablePrefix) {
-            return addTablePrefix(Arrays.asList(tablePrefix));
-        }
-
-        public Builder addTablePrefix(@NotNull List<String> tablePrefixList) {
-            this.strategyConfig.tablePrefix.addAll(tablePrefixList);
+            this.strategyConfig.tablePrefix.addAll(Arrays.asList(tablePrefix));
             return this;
         }
 
@@ -448,11 +444,7 @@ public class StrategyConfig {
          * @since 3.5.1
          */
         public Builder addTableSuffix(String... tableSuffix) {
-            return addTableSuffix(Arrays.asList(tableSuffix));
-        }
-
-        public Builder addTableSuffix(@NotNull List<String> tableSuffixList) {
-            this.strategyConfig.tableSuffix.addAll(tableSuffixList);
+            this.strategyConfig.tableSuffix.addAll(Arrays.asList(tableSuffix));
             return this;
         }
 
@@ -464,11 +456,7 @@ public class StrategyConfig {
          * @since 3.5.0
          */
         public Builder addFieldPrefix(@NotNull String... fieldPrefix) {
-            return addFieldPrefix(Arrays.asList(fieldPrefix));
-        }
-
-        public Builder addFieldPrefix(@NotNull List<String> fieldPrefix) {
-            this.strategyConfig.fieldPrefix.addAll(fieldPrefix);
+            this.strategyConfig.fieldPrefix.addAll(Arrays.asList(fieldPrefix));
             return this;
         }
 
@@ -480,11 +468,7 @@ public class StrategyConfig {
          * @since 3.5.1
          */
         public Builder addFieldSuffix(@NotNull String... fieldSuffix) {
-            return addFieldSuffix(Arrays.asList(fieldSuffix));
-        }
-
-        public Builder addFieldSuffix(@NotNull List<String> fieldSuffixList) {
-            this.strategyConfig.fieldSuffix.addAll(fieldSuffixList);
+            this.strategyConfig.fieldSuffix.addAll(Arrays.asList(fieldSuffix));
             return this;
         }
 
@@ -505,11 +489,6 @@ public class StrategyConfig {
             return this;
         }
 
-        public Builder addInclude(@NotNull String include) {
-            this.strategyConfig.include.addAll(Arrays.asList(include.split(",")));
-            return this;
-        }
-
         /**
          * 增加排除表
          *
@@ -518,11 +497,7 @@ public class StrategyConfig {
          * @since 3.5.0
          */
         public Builder addExclude(@NotNull String... exclude) {
-            return addExclude(Arrays.asList(exclude));
-        }
-
-        public Builder addExclude(@NotNull List<String> excludeList) {
-            this.strategyConfig.exclude.addAll(excludeList);
+            this.strategyConfig.exclude.addAll(Arrays.asList(exclude));
             return this;
         }
 

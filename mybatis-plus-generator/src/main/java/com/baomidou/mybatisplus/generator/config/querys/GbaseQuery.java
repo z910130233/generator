@@ -1,12 +1,17 @@
 package com.baomidou.mybatisplus.generator.config.querys;
 
 
+import com.baomidou.mybatisplus.generator.config.IDbQuery;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * https://github.com/baomidou/generator/pull/83
  *
  * @author lix
  */
-public class GbaseQuery extends AbstractDbQuery {
+public class GbaseQuery implements IDbQuery {
 
     @Override
     public String tablesSql() {
@@ -107,4 +112,13 @@ public class GbaseQuery extends AbstractDbQuery {
         return "key";
     }
 
+    @Override
+    public boolean isKeyIdentity(ResultSet results) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public String[] fieldCustom() {
+        return null;
+    }
 }

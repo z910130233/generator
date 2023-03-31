@@ -140,7 +140,7 @@ public class TemplateConfig {
                     case SERVICE:
                         this.service = null;
                         break;
-                    case SERVICE_IMPL:
+                    case SERVICEIMPL:
                         this.serviceImpl = null;
                         break;
                     default:
@@ -276,11 +276,11 @@ public class TemplateConfig {
         /**
          * 设置mapperXml模板路径
          *
-         * @param xmlTemplate xml模板路径
+         * @param mapperXmlTemplate xml模板路径
          * @return this
          */
-        public Builder xml(@NotNull String xmlTemplate) {
-            this.templateConfig.xml = xmlTemplate;
+        public Builder mapperXml(@NotNull String mapperXmlTemplate) {
+            this.templateConfig.xml = mapperXmlTemplate;
             return this;
         }
 

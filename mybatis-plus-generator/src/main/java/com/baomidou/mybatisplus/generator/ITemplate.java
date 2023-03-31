@@ -21,8 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 /**
- * 渲染模板接口
- *
  * @author nieqiurong 2020/11/9.
  * @since 3.5.0
  */

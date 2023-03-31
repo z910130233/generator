@@ -39,13 +39,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
- * DbQuery 装饰器
+ * 装饰DbQuery
  *
  * @author nieqiurong 2020/9/17.
- * @author hubin
  * @since 3.5.0
  */
-public class DbQueryDecorator extends AbstractDbQuery {
+public class DecoratorDbQuery extends AbstractDbQuery {
+
     private final IDbQuery dbQuery;
     private final Connection connection;
     private final DbType dbType;
@@ -53,7 +53,7 @@ public class DbQueryDecorator extends AbstractDbQuery {
     private final String schema;
     private final Logger logger;
 
-    public DbQueryDecorator(@NotNull DataSourceConfig dataSourceConfig, @NotNull StrategyConfig strategyConfig) {
+    public DecoratorDbQuery(@NotNull DataSourceConfig dataSourceConfig, @NotNull StrategyConfig strategyConfig) {
         this.dbQuery = dataSourceConfig.getDbQuery();
         this.connection = dataSourceConfig.getConn();
         this.dbType = dataSourceConfig.getDbType();
@@ -105,12 +105,11 @@ public class DbQueryDecorator extends AbstractDbQuery {
         if (DbType.KINGBASE_ES == dbType || DbType.DB2 == dbType) {
             tableFieldsSql = String.format(tableFieldsSql, this.schema, tableName);
         } else if (DbType.ORACLE == dbType) {
-            tableFieldsSql = String.format(tableFieldsSql.replace("#schema", this.schema), tableName, tableName.toUpperCase());
+            tableName = tableName.toUpperCase();
+            tableFieldsSql = String.format(tableFieldsSql.replace("#schema", this.schema), tableName);
         } else if (DbType.DM == dbType) {
             tableName = tableName.toUpperCase();
             tableFieldsSql = String.format(tableFieldsSql, tableName);
-        } else if (DbType.POSTGRE_SQL == dbType) {
-            tableFieldsSql = String.format(tableFieldsSql, tableName, tableName, tableName);
         } else {
             tableFieldsSql = String.format(tableFieldsSql, tableName);
         }
@@ -179,14 +178,7 @@ public class DbQueryDecorator extends AbstractDbQuery {
         return Collections.emptyMap();
     }
 
-    /**
-     * 执行 SQL 查询，回调返回结果
-     *
-     * @param sql      执行SQL
-     * @param consumer 结果处理
-     * @throws SQLException
-     */
-    public void execute(String sql, Consumer<ResultSetWrapper> consumer) throws SQLException {
+    public void query(String sql, Consumer<ResultSetWrapper> consumer) throws SQLException {
         logger.debug("执行SQL:{}", sql);
         int count = 0;
         long start = System.nanoTime();
@@ -241,43 +233,23 @@ public class DbQueryDecorator extends AbstractDbQuery {
             }
         }
 
-        /**
-         * @return 获取字段注释
-         */
         public String getFiledComment() {
             return getComment(dbQuery.fieldComment());
+
         }
 
-        /**
-         * 获取格式化注释
-         *
-         * @param columnLabel 字段列
-         * @return 注释
-         */
         private String getComment(String columnLabel) {
             return StringUtils.isNotBlank(columnLabel) ? formatComment(getStringResult(columnLabel)) : StringPool.EMPTY;
         }
 
-        /**
-         * 获取表注释
-         *
-         * @return 表注释
-         */
         public String getTableComment() {
             return getComment(dbQuery.tableComment());
         }
 
-        /**
-         * @param comment 注释
-         * @return 格式化内容
-         */
         public String formatComment(String comment) {
             return StringUtils.isBlank(comment) ? StringPool.EMPTY : comment.replaceAll("\r\n", "\t");
         }
 
-        /**
-         * @return 是否主键
-         */
         public boolean isPrimaryKey() {
             String key = this.getStringResult(dbQuery.fieldKey());
             if (DbType.DB2 == dbType || DbType.SQLITE == dbType || DbType.CLICK_HOUSE == dbType) {

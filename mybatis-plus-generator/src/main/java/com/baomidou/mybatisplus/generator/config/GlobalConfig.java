@@ -17,8 +17,6 @@ package com.baomidou.mybatisplus.generator.config;
 
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,17 +34,14 @@ public class GlobalConfig {
     private GlobalConfig() {
     }
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(GlobalConfig.class);
-
     /**
      * 生成文件的输出目录【 windows:D://  linux or mac:/tmp 】
      */
     private String outputDir = System.getProperty("os.name").toLowerCase().contains("windows") ? "D://" : "/tmp";
 
     /**
-     * 是否覆盖已有文件（默认 false）（已迁移到策略配置中，3.5.4版本会删除此方法）
+     * 是否覆盖已有文件（默认 false）
      */
-    @Deprecated
     private boolean fileOverride;
 
     /**
@@ -57,7 +52,7 @@ public class GlobalConfig {
     /**
      * 作者
      */
-    private String author = "baomidou";
+    private String author = "作者";
 
     /**
      * 开启 Kotlin 模式（默认 false）
@@ -65,13 +60,9 @@ public class GlobalConfig {
     private boolean kotlin;
 
     /**
-     * 开启 swagger 模式（默认 false 与 springdoc 不可同时使用）
+     * 开启 swagger 模式（默认 false）
      */
     private boolean swagger;
-    /**
-     * 开启 springdoc 模式（默认 false 与 swagger 不可同时使用）
-     */
-    private boolean springdoc;
 
     /**
      * 时间类型对应策略
@@ -89,10 +80,6 @@ public class GlobalConfig {
         return outputDir;
     }
 
-    /**
-     * 是否覆盖已有文件（已迁移到策略配置中，3.5.4版本会删除此方法）
-     */
-    @Deprecated
     public boolean isFileOverride() {
         return fileOverride;
     }
@@ -110,12 +97,7 @@ public class GlobalConfig {
     }
 
     public boolean isSwagger() {
-        // springdoc 设置优先于 swagger
-        return springdoc ? false : swagger;
-    }
-
-    public boolean isSpringdoc() {
-        return springdoc;
+        return swagger;
     }
 
     @NotNull
@@ -143,11 +125,9 @@ public class GlobalConfig {
         }
 
         /**
-         * 覆盖已有文件（已迁移到策略配置中，3.5.4版本会删除此方法）
+         * 覆盖已有文件
          */
-        @Deprecated
         public Builder fileOverride() {
-            LOGGER.warn("全局覆盖已有文件的配置已失效，已迁移到策略配置中");
             this.globalConfig.fileOverride = true;
             return this;
         }
@@ -155,7 +135,7 @@ public class GlobalConfig {
         /**
          * 禁止打开输出目录
          */
-        public Builder disableOpenDir() {
+        public Builder disableOpenDir(){
             this.globalConfig.open = false;
             return this;
         }
@@ -189,14 +169,6 @@ public class GlobalConfig {
          */
         public Builder enableSwagger() {
             this.globalConfig.swagger = true;
-            return this;
-        }
-
-        /**
-         * 开启 springdoc 模式
-         */
-        public Builder enableSpringdoc() {
-            this.globalConfig.springdoc = true;
             return this;
         }
 

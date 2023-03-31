@@ -15,20 +15,19 @@
  */
 package com.baomidou.mybatisplus.generator.config.builder;
 
+import com.baomidou.mybatisplus.generator.IDatabaseQuery;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
-import com.baomidou.mybatisplus.generator.query.IDatabaseQuery;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.regex.Pattern;
 
 /**
  * 配置汇总 传递给文件生成工具
  *
- * @author YangHu, tangguo, hubin, Juzi, lanjerry
+ * @author YangHu, tangguo, hubin, Juzi
  * @since 2016-08-30
  */
 public class ConfigBuilder {
@@ -49,7 +48,7 @@ public class ConfigBuilder {
     private final Map<OutputFile, String> pathInfo = new HashMap<>();
 
     /**
-     * 策略配置信息
+     * 策略配置
      */
     private StrategyConfig strategyConfig;
 
@@ -79,12 +78,6 @@ public class ConfigBuilder {
     private final DataSourceConfig dataSourceConfig;
 
     /**
-     * 数据查询实例
-     * @since 3.5.3
-     */
-    private final IDatabaseQuery databaseQuery;
-
-    /**
      * 在构造器中处理配置
      *
      * @param packageConfig    包配置
@@ -97,19 +90,12 @@ public class ConfigBuilder {
                          @Nullable StrategyConfig strategyConfig, @Nullable TemplateConfig templateConfig,
                          @Nullable GlobalConfig globalConfig, @Nullable InjectionConfig injectionConfig) {
         this.dataSourceConfig = dataSourceConfig;
-        this.strategyConfig = Optional.ofNullable(strategyConfig).orElseGet(GeneratorBuilder::strategyConfig);
-        this.globalConfig = Optional.ofNullable(globalConfig).orElseGet(GeneratorBuilder::globalConfig);
-        this.templateConfig = Optional.ofNullable(templateConfig).orElseGet(GeneratorBuilder::templateConfig);
-        this.packageConfig = Optional.ofNullable(packageConfig).orElseGet(GeneratorBuilder::packageConfig);
-        this.injectionConfig = Optional.ofNullable(injectionConfig).orElseGet(GeneratorBuilder::injectionConfig);
+        this.strategyConfig = Optional.ofNullable(strategyConfig).orElseGet(() -> GeneratorBuilder.strategyConfig());
+        this.globalConfig = Optional.ofNullable(globalConfig).orElseGet(() -> GeneratorBuilder.globalConfig());
+        this.templateConfig = Optional.ofNullable(templateConfig).orElseGet(() -> GeneratorBuilder.templateConfig());
+        this.packageConfig = Optional.ofNullable(packageConfig).orElseGet(() -> GeneratorBuilder.packageConfig());
+        this.injectionConfig = Optional.ofNullable(injectionConfig).orElseGet(() -> GeneratorBuilder.injectionConfig());
         this.pathInfo.putAll(new PathInfoHandler(this.globalConfig, this.templateConfig, this.packageConfig).getPathInfo());
-        Class<? extends IDatabaseQuery> databaseQueryClass = dataSourceConfig.getDatabaseQueryClass();
-        try {
-            Constructor<? extends IDatabaseQuery> declaredConstructor = databaseQueryClass.getDeclaredConstructor(this.getClass());
-            this.databaseQuery = declaredConstructor.newInstance(this);
-        } catch (ReflectiveOperationException exception) {
-            throw new RuntimeException("创建IDatabaseQuery实例出现错误:", exception);
-        }
     }
 
     /**
@@ -149,7 +135,8 @@ public class ConfigBuilder {
     @NotNull
     public List<TableInfo> getTableInfoList() {
         if (tableInfoList.isEmpty()) {
-            List<TableInfo> tableInfos = this.databaseQuery.queryTables();
+            // TODO 暂时不开放自定义
+            List<TableInfo> tableInfos = new IDatabaseQuery.DefaultDatabaseQuery(this).queryTables();
             if (!tableInfos.isEmpty()) {
                 this.tableInfoList.addAll(tableInfos);
             }

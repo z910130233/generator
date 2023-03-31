@@ -22,8 +22,6 @@ import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.function.ConverterFileName;
 import com.baomidou.mybatisplus.generator.util.ClassUtils;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +33,6 @@ import java.util.Map;
  * @since 3.5.0
  */
 public class Service implements ITemplate {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(Service.class);
 
     private Service() {
     }
@@ -75,13 +71,6 @@ public class Service implements ITemplate {
      */
     private ConverterFileName converterServiceImplFileName = (entityName -> entityName + ConstVal.SERVICE_IMPL);
 
-    /**
-     * 是否覆盖已有文件（默认 false）
-     *
-     * @since 3.5.2
-     */
-    private boolean fileOverride;
-
     @NotNull
     public ConverterFileName getConverterServiceFileName() {
         return converterServiceFileName;
@@ -90,10 +79,6 @@ public class Service implements ITemplate {
     @NotNull
     public ConverterFileName getConverterServiceImplFileName() {
         return converterServiceImplFileName;
-    }
-
-    public boolean isFileOverride() {
-        return fileOverride;
     }
 
     @Override
@@ -201,26 +186,6 @@ public class Service implements ITemplate {
          */
         public Builder formatServiceImplFileName(@NotNull String format) {
             return convertServiceImplFileName((entityName) -> String.format(format, entityName));
-        }
-
-        /**
-         * 覆盖已有文件（该方法后续会删除，替代方法为enableFileOverride方法）
-         *
-         * @see #enableFileOverride()
-         */
-        @Deprecated
-        public Builder fileOverride() {
-            LOGGER.warn("fileOverride方法后续会删除，替代方法为enableFileOverride方法");
-            this.service.fileOverride = true;
-            return this;
-        }
-
-        /**
-         * 覆盖已有文件
-         */
-        public Builder enableFileOverride() {
-            this.service.fileOverride = true;
-            return this;
         }
 
         @NotNull

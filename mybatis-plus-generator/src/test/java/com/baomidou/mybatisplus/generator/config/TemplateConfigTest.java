@@ -27,7 +27,7 @@ public class TemplateConfigTest {
         Assertions.assertNotNull(templateConfig.getEntity(true));
         Assertions.assertNotNull(templateConfig.getEntity(false));
 
-        templateConfig = GeneratorBuilder.templateConfig().disable(TemplateType.SERVICE_IMPL);
+        templateConfig = GeneratorBuilder.templateConfig().disable(TemplateType.SERVICEIMPL);
         Assertions.assertNull(templateConfig.getServiceImpl());
         Assertions.assertNotNull(templateConfig.getEntity(true));
         Assertions.assertNotNull(templateConfig.getEntity(false));

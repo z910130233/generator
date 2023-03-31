@@ -3,11 +3,9 @@ package ${package.Entity}
 <% for(pkg in table.importPackages){ %>
 import ${pkg}
 <% } %>
-<% if(springdoc){ %>
-import io.swagger.v3.oas.annotations.media.Schema;
-<% }else if(swagger){ %>
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+<% if(swagger){ %>
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 <% } %>
 
 /**
@@ -21,9 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
 <% if(table.convert){ %>
 @TableName("${schemaName}${table.name}")
 <% } %>
-<% if(springdoc){ %>
-@Schema(name = "${entity}", description = "$!{table.comment}")
-<% }else if(swagger){ %>
+<% if(swagger){ %>
 @ApiModel(value = "${entity}对象", description = "${table.comment!''}")
 <% } %>
 <% if(isNotEmpty(superEntityClass)){ %>
@@ -44,10 +40,8 @@ class ${entity} {
     }
     %>
     <% if(isNotEmpty(field.comment)){ %>
-        <% if(springdoc){ %>
-    @Schema(description = "${field.comment}")
-        <% }else if(swagger){ %>
-    @ApiModelProperty(value = "${field.comment}")
+        <% if(swagger){ %>
+    @ApiModelProperty("${field.comment}")
         <% }else{ %>
     /**
      * ${field.comment}

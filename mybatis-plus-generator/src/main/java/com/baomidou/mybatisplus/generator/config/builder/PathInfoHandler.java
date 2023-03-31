@@ -69,11 +69,11 @@ class PathInfoHandler {
     private void setDefaultPathInfo(GlobalConfig globalConfig, TemplateConfig templateConfig) {
         putPathInfo(templateConfig.getEntity(globalConfig.isKotlin()), OutputFile.entity, ConstVal.ENTITY);
         putPathInfo(templateConfig.getMapper(), OutputFile.mapper, ConstVal.MAPPER);
-        putPathInfo(templateConfig.getXml(), OutputFile.xml, ConstVal.XML);
+        putPathInfo(templateConfig.getXml(), OutputFile.mapperXml, ConstVal.XML);
         putPathInfo(templateConfig.getService(), OutputFile.service, ConstVal.SERVICE);
         putPathInfo(templateConfig.getServiceImpl(), OutputFile.serviceImpl, ConstVal.SERVICE_IMPL);
         putPathInfo(templateConfig.getController(), OutputFile.controller, ConstVal.CONTROLLER);
-        putPathInfo(OutputFile.parent, ConstVal.PARENT);
+        putPathInfo(OutputFile.other, ConstVal.OTHER);
     }
 
     public Map<OutputFile, String> getPathInfo() {

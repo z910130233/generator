@@ -84,7 +84,9 @@ public class Entity implements ITemplate {
     private boolean columnConstant;
 
     /**
-     * 【实体】是否为链式模型（默认 false）
+     * 【实体】是否为链式模型（默认 false）<br>
+     * -----------------------------------<br>
+     * public User setName(String name) { this.name = name; return this; }
      *
      * @since 3.3.2
      */
@@ -171,13 +173,6 @@ public class Entity implements ITemplate {
      * @since 3.5.0
      */
     private ConverterFileName converterFileName = (entityName -> entityName);
-
-    /**
-     * 是否覆盖已有文件（默认 false）
-     *
-     * @since 3.5.2
-     */
-    private boolean fileOverride;
 
     /**
      * <p>
@@ -313,10 +308,6 @@ public class Entity implements ITemplate {
     @NotNull
     public ConverterFileName getConverterFileName() {
         return converterFileName;
-    }
-
-    public boolean isFileOverride() {
-        return fileOverride;
     }
 
     @Override
@@ -529,11 +520,7 @@ public class Entity implements ITemplate {
          * @since 3.5.0
          */
         public Builder addSuperEntityColumns(@NotNull String... superEntityColumns) {
-            return addSuperEntityColumns(Arrays.asList(superEntityColumns));
-        }
-
-        public Builder addSuperEntityColumns(@NotNull List<String> superEntityColumnList) {
-            this.entity.superEntityColumns.addAll(superEntityColumnList);
+            this.entity.superEntityColumns.addAll(Arrays.asList(superEntityColumns));
             return this;
         }
 
@@ -545,23 +532,20 @@ public class Entity implements ITemplate {
          * @since 3.5.0
          */
         public Builder addIgnoreColumns(@NotNull String... ignoreColumns) {
-            return addIgnoreColumns(Arrays.asList(ignoreColumns));
-        }
-
-        public Builder addIgnoreColumns(@NotNull List<String> ignoreColumnList) {
-            this.entity.ignoreColumns.addAll(ignoreColumnList);
+            this.entity.ignoreColumns.addAll(Arrays.asList(ignoreColumns));
             return this;
         }
 
         /**
          * 添加表字段填充
          *
-         * @param tableFills 填充字段
+         * @param tableFill 填充字段
          * @return this
          * @since 3.5.0
          */
-        public Builder addTableFills(@NotNull IFill... tableFills) {
-            return addTableFills(Arrays.asList(tableFills));
+        public Builder addTableFills(@NotNull IFill... tableFill) {
+            this.entity.tableFillList.addAll(Arrays.asList(tableFill));
+            return this;
         }
 
         /**
@@ -609,28 +593,6 @@ public class Entity implements ITemplate {
          */
         public Builder formatFileName(String format) {
             return convertFileName((entityName) -> String.format(format, entityName));
-        }
-
-        /**
-         * 覆盖已有文件（该方法后续会删除，替代方法为enableFileOverride方法）
-         *
-         * @see #enableFileOverride()
-         */
-        @Deprecated
-        public Builder fileOverride() {
-            LOGGER.warn("fileOverride方法后续会删除，替代方法为enableFileOverride方法");
-            this.entity.fileOverride = true;
-            return this;
-        }
-
-        /**
-         * 覆盖已有文件
-         *
-         * @since 3.5.3
-         */
-        public Builder enableFileOverride() {
-            this.entity.fileOverride = true;
-            return this;
         }
 
         public Entity get() {
