@@ -68,7 +68,7 @@ public abstract class AbstractTemplateEngine {
         String entityName = tableInfo.getEntityName();
         String otherPath = getPathInfo(OutputFile.other);
         customFile.forEach((key, value) -> {
-            String fileName = String.format((otherPath + File.separator + entityName + File.separator + "%s"), key);
+            String fileName = String.format((otherPath + File.separator + "%s"), key);
             outputFile(new File(fileName), objectMap, value);
         });
     }
