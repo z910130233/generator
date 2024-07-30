@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2011-2021, baomidou (jobob@qq.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.baomidou.mybatisplus.generator.config;
 
@@ -19,16 +19,26 @@ import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.converts.TypeConverts;
+import com.baomidou.mybatisplus.generator.config.querys.DbQueryDecorator;
 import com.baomidou.mybatisplus.generator.config.querys.DbQueryRegistry;
-import com.baomidou.mybatisplus.generator.config.querys.DecoratorDbQuery;
+import com.baomidou.mybatisplus.generator.query.AbstractDatabaseQuery;
+import com.baomidou.mybatisplus.generator.query.DefaultQuery;
+import com.baomidou.mybatisplus.generator.query.IDatabaseQuery;
+import com.baomidou.mybatisplus.generator.query.SQLQuery;
+import com.baomidou.mybatisplus.generator.type.ITypeConvertHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * 数据库配置
@@ -37,6 +47,8 @@ import java.util.Optional;
  * @since 2016/8/30
  */
 public class DataSourceConfig {
+
+    protected final Logger logger = LoggerFactory.getLogger(DataSourceConfig.class);
 
     private DataSourceConfig() {
     }
@@ -93,6 +105,29 @@ public class DataSourceConfig {
     private Connection connection;
 
     /**
+     * 数据库连接属性
+     *
+     * @since 3.5.3
+     */
+    private final Map<String, String> connectionProperties = new HashMap<>();
+
+    /**
+     * 查询方式
+     *
+     * @see DefaultQuery 默认查询方式，配合{@link #getTypeConvertHandler()} 使用
+     * @see SQLQuery SQL语句查询方式，配合{@link #typeConvert} 使用
+     * @since 3.5.3
+     */
+    private Class<? extends AbstractDatabaseQuery> databaseQueryClass = DefaultQuery.class;
+
+    /**
+     * 类型转换处理
+     *
+     * @since 3.5.3
+     */
+    private ITypeConvertHandler typeConvertHandler;
+
+    /**
      * 获取数据库查询
      */
     @NotNull
@@ -141,6 +176,8 @@ public class DataSourceConfig {
             return DbType.SQLITE;
         } else if (str.contains(":h2:")) {
             return DbType.H2;
+        } else if (str.contains(":lealone:")) {
+            return DbType.LEALONE;
         } else if (str.contains(":kingbase:") || str.contains(":kingbase8:")) {
             return DbType.KINGBASE_ES;
         } else if (str.contains(":dm:")) {
@@ -155,6 +192,8 @@ public class DataSourceConfig {
             return DbType.XU_GU;
         } else if (str.contains(":clickhouse:")) {
             return DbType.CLICK_HOUSE;
+        } else if (str.contains(":sybase:")) {
+            return DbType.SYBASE;
         } else {
             return DbType.OTHER;
         }
@@ -181,7 +220,7 @@ public class DataSourceConfig {
      * 这方法建议只调用一次，毕竟只是代码生成，用一个连接就行。
      *
      * @return Connection
-     * @see DecoratorDbQuery#getConnection()
+     * @see DbQueryDecorator#getConnection()
      */
     @NotNull
     public Connection getConn() {
@@ -193,19 +232,42 @@ public class DataSourceConfig {
                     if (dataSource != null) {
                         connection = dataSource.getConnection();
                     } else {
-                        this.connection = DriverManager.getConnection(url, username, password);
+                        Properties properties = new Properties();
+                        connectionProperties.forEach(properties::setProperty);
+                        properties.put("user", username);
+                        properties.put("password", password);
+                        // 使用元数据查询方式时，有些数据库需要增加属性才能读取注释
+                        this.processProperties(properties);
+                        this.connection = DriverManager.getConnection(url, properties);
+                        if (StringUtils.isBlank(this.schemaName)) {
+                            try {
+                                this.schemaName = connection.getSchema();
+                            } catch (Exception exception) {
+                                // ignore 老古董1.7以下的驱动不支持.
+                            }
+                        }
                     }
                 }
-            }
-            String schema = StringUtils.isNotBlank(schemaName) ? schemaName : getDefaultSchema();
-            if (StringUtils.isNotBlank(schema)) {
-                schemaName = schema;
-                connection.setSchema(schemaName);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return connection;
+    }
+
+    private void processProperties(Properties properties) {
+        if (this.databaseQueryClass.getName().equals(DefaultQuery.class.getName())) {
+            switch (this.getDbType()) {
+                case MYSQL:
+                    properties.put("remarks", "true");
+                    properties.put("useInformationSchema", "true");
+                    break;
+                case ORACLE:
+                    properties.put("remarks", "true");
+                    properties.put("remarksReporting", "true");
+                    break;
+            }
+        }
     }
 
     /**
@@ -259,6 +321,15 @@ public class DataSourceConfig {
         return password;
     }
 
+    @NotNull
+    public Class<? extends IDatabaseQuery> getDatabaseQueryClass() {
+        return databaseQueryClass;
+    }
+
+    @Nullable
+    public ITypeConvertHandler getTypeConvertHandler() {
+        return typeConvertHandler;
+    }
 
     /**
      * 数据库配置构建者
@@ -302,7 +373,11 @@ public class DataSourceConfig {
             try {
                 Connection conn = dataSource.getConnection();
                 this.dataSourceConfig.url = conn.getMetaData().getURL();
-                this.dataSourceConfig.schemaName = conn.getSchema();
+                try {
+                    this.dataSourceConfig.schemaName = conn.getSchema();
+                } catch (Throwable exception) {
+                    //ignore  如果使用低版本的驱动，这里由于是1.7新增的方法，所以会报错，如果驱动太低，需要自行指定了。
+                }
                 this.dataSourceConfig.connection = conn;
                 this.dataSourceConfig.username = conn.getMetaData().getUserName();
             } catch (SQLException ex) {
@@ -353,6 +428,44 @@ public class DataSourceConfig {
             this.dataSourceConfig.keyWordsHandler = keyWordsHandler;
             return this;
         }
+
+        /**
+         * 指定数据库查询方式
+         *
+         * @param databaseQueryClass 查询类
+         * @return this
+         * @since 3.5.3
+         */
+        public Builder databaseQueryClass(@NotNull Class<? extends AbstractDatabaseQuery> databaseQueryClass) {
+            this.dataSourceConfig.databaseQueryClass = databaseQueryClass;
+            return this;
+        }
+
+        /**
+         * 指定类型转换器
+         *
+         * @param typeConvertHandler 类型转换器
+         * @return this
+         * @since 3.5.3
+         */
+        public Builder typeConvertHandler(@NotNull ITypeConvertHandler typeConvertHandler) {
+            this.dataSourceConfig.typeConvertHandler = typeConvertHandler;
+            return this;
+        }
+
+        /**
+         * 增加数据库连接属性
+         *
+         * @param key   属性名
+         * @param value 属性值
+         * @return this
+         * @since 3.5.3
+         */
+        public Builder addConnectionProperty(@NotNull String key, @NotNull String value) {
+            this.dataSourceConfig.connectionProperties.put(key, value);
+            return this;
+        }
+
 
         /**
          * 构建数据库配置

@@ -36,7 +36,7 @@ public class ConfigBuilderTest {
         ConfigBuilder configBuilder;
         Map<OutputFile, String> pathInfo;
         configBuilder = new ConfigBuilder(GeneratorBuilder.packageConfig(), DATA_SOURCE_CONFIG, GeneratorBuilder.strategyConfig(),
-            GeneratorBuilder.templateConfig(), null, null);
+            null, null, null);
         pathInfo = configBuilder.getPathInfo();
         Assertions.assertFalse(pathInfo.isEmpty());
         Assertions.assertEquals(7, pathInfo.size());
@@ -44,14 +44,14 @@ public class ConfigBuilderTest {
         Assertions.assertTrue(pathInfo.containsKey(OutputFile.controller));
         Assertions.assertTrue(pathInfo.containsKey(OutputFile.service));
         Assertions.assertTrue(pathInfo.containsKey(OutputFile.serviceImpl));
-        Assertions.assertTrue(pathInfo.containsKey(OutputFile.mapperXml));
+        Assertions.assertTrue(pathInfo.containsKey(OutputFile.xml));
         Assertions.assertTrue(pathInfo.containsKey(OutputFile.mapper));
-        Assertions.assertTrue(pathInfo.containsKey(OutputFile.other));
+        Assertions.assertTrue(pathInfo.containsKey(OutputFile.parent));
 
         configBuilder = new ConfigBuilder(
             GeneratorBuilder.packageConfigBuilder().pathInfo(Collections.singletonMap(OutputFile.entity,
                 "/tmp/code/entity")).build(), DATA_SOURCE_CONFIG, GeneratorBuilder.strategyConfig(),
-            GeneratorBuilder.templateConfig(), null, null);
+            null, null, null);
         pathInfo = configBuilder.getPathInfo();
         Assertions.assertFalse(pathInfo.isEmpty());
         Assertions.assertEquals(7, pathInfo.size());

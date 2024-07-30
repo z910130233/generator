@@ -1,24 +1,26 @@
 /*
- * Copyright (c) 2011-2021, baomidou (jobob@qq.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.baomidou.mybatisplus.generator.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 /**
  * 运行工具类
@@ -34,20 +36,24 @@ public class RuntimeUtils {
      * 打开指定输出文件目录
      *
      * @param outDir 输出文件目录
-     * @throws IOException
      */
     public static void openDir(String outDir) throws IOException {
+        File file = new File(outDir);
+        if (!file.isDirectory()) {
+            LOGGER.error("illegal directory:{}", outDir);
+            throw new IllegalArgumentException("Illegal directory " + outDir);
+        }
         String osName = System.getProperty("os.name");
         if (osName != null) {
             if (osName.contains("Mac")) {
                 Runtime.getRuntime().exec("open " + outDir);
             } else if (osName.contains("Windows")) {
-                Runtime.getRuntime().exec("cmd /c start " + outDir);
+                Runtime.getRuntime().exec(MessageFormat.format("cmd /c start \"\" \"{0}\"", outDir));
             } else {
-                LOGGER.debug("文件输出目录:{}", outDir);
+                LOGGER.debug("file output directory:{}", outDir);
             }
         } else {
-            LOGGER.warn("读取操作系统失败");
+            LOGGER.warn("read operating system failed!");
         }
     }
 }

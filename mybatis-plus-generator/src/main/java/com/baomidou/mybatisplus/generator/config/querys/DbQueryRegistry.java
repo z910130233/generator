@@ -1,25 +1,25 @@
 /*
- * Copyright (c) 2011-2021, baomidou (jobob@qq.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.baomidou.mybatisplus.generator.config.querys;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.generator.config.IDbQuery;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * @author nieqiuqiu
@@ -37,6 +37,7 @@ public class DbQueryRegistry {
         db_query_enum_map.put(DbType.DB2, new DB2Query());
         db_query_enum_map.put(DbType.MARIADB, new MariadbQuery());
         db_query_enum_map.put(DbType.H2, new H2Query());
+        db_query_enum_map.put(DbType.LEALONE, new H2Query());
         db_query_enum_map.put(DbType.SQLITE, new SqliteQuery());
         db_query_enum_map.put(DbType.DM, new DMQuery());
         db_query_enum_map.put(DbType.KINGBASE_ES, new KingbaseESQuery());
@@ -47,6 +48,7 @@ public class DbQueryRegistry {
         db_query_enum_map.put(DbType.XU_GU, new XuguQuery());
         db_query_enum_map.put(DbType.CLICK_HOUSE, new ClickHouseQuery());
         db_query_enum_map.put(DbType.GBASE, new GbaseQuery());
+        db_query_enum_map.put(DbType.SYBASE, new SybaseQuery());
     }
 
     public IDbQuery getDbQuery(DbType dbType) {

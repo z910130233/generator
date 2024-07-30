@@ -1,22 +1,23 @@
 /*
- * Copyright (c) 2011-2021, baomidou (jobob@qq.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.baomidou.mybatisplus.generator.config;
 
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -42,46 +43,49 @@ public class PackageConfig {
     /**
      * 父包模块名
      */
+    @Getter
     private String moduleName = "";
 
     /**
      * Entity包名
      */
+    @Getter
     private String entity = "entity";
 
     /**
      * Service包名
      */
+    @Getter
     private String service = "service";
 
     /**
      * Service Impl包名
      */
+    @Getter
     private String serviceImpl = "service.impl";
 
     /**
      * Mapper包名
      */
+    @Getter
     private String mapper = "mapper";
 
     /**
      * Mapper XML包名
      */
+    @Getter
     private String xml = "mapper.xml";
 
     /**
      * Controller包名
      */
+    @Getter
     private String controller = "controller";
-
-    /**
-     * Other包名
-     */
-    private String other = "other";
 
     /**
      * 路径配置信息
      */
+    @Getter
     private Map<OutputFile, String> pathInfo;
 
     /**
@@ -130,7 +134,6 @@ public class PackageConfig {
             packageInfo.put(ConstVal.SERVICE, this.joinPackage(this.getService()));
             packageInfo.put(ConstVal.SERVICE_IMPL, this.joinPackage(this.getServiceImpl()));
             packageInfo.put(ConstVal.CONTROLLER, this.joinPackage(this.getController()));
-            packageInfo.put(ConstVal.OTHER, this.joinPackage(this.getOther()));
             packageInfo.put(ConstVal.PARENT, this.getParent());
         }
         return Collections.unmodifiableMap(this.packageInfo);
@@ -145,42 +148,6 @@ public class PackageConfig {
      */
     public String getPackageInfo(String module) {
         return getPackageInfo().get(module);
-    }
-
-    public String getModuleName() {
-        return moduleName;
-    }
-
-    public String getEntity() {
-        return entity;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public String getServiceImpl() {
-        return serviceImpl;
-    }
-
-    public String getMapper() {
-        return mapper;
-    }
-
-    public String getXml() {
-        return xml;
-    }
-
-    public String getController() {
-        return controller;
-    }
-
-    public String getOther() {
-        return other;
-    }
-
-    public Map<OutputFile, String> getPathInfo() {
-        return pathInfo;
     }
 
     /**
@@ -288,17 +255,6 @@ public class PackageConfig {
          */
         public Builder controller(@NotNull String controller) {
             this.packageConfig.controller = controller;
-            return this;
-        }
-
-        /**
-         * 指定自定义文件包名
-         *
-         * @param other 自定义文件包名
-         * @return this
-         */
-        public Builder other(@NotNull String other) {
-            this.packageConfig.other = other;
             return this;
         }
 

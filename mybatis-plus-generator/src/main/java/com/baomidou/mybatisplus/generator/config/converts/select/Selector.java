@@ -1,4 +1,21 @@
+/*
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.baomidou.mybatisplus.generator.config.converts.select;
+
+import lombok.Getter;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -14,6 +31,10 @@ import java.util.function.Supplier;
  * Created at 2020/6/11 16:55
  */
 public class Selector<P, T> {
+    /**
+     *  当前选择器是否已经选择分支，如果已经存在分支被击中，则返回 true；否则返回 false
+     */
+    @Getter
     private boolean selected = false;
     private Function<P, T> factory;
 
@@ -76,15 +97,6 @@ public class Selector<P, T> {
      */
     public T or(T t) {
         return or(() -> t);
-    }
-
-    /**
-     * 当前选择器是否已经选择分支
-     *
-     * @return 如果已经存在分支被击中，则返回 true；否则返回 false
-     */
-    public boolean isSelected() {
-        return selected;
     }
 
     @Override

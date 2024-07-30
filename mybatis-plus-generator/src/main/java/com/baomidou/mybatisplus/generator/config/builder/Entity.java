@@ -1,40 +1,50 @@
 /*
- * Copyright (c) 2011-2021, baomidou (jobob@qq.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.baomidou.mybatisplus.generator.config.builder;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.core.handlers.AnnotationHandler;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.ITemplate;
+import com.baomidou.mybatisplus.generator.config.ConstVal;
 import com.baomidou.mybatisplus.generator.config.INameConvert;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.function.ConverterFileName;
 import com.baomidou.mybatisplus.generator.util.ClassUtils;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +55,23 @@ import java.util.stream.Collectors;
  */
 public class Entity implements ITemplate {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(Entity.class);
+    private final AnnotationHandler annotationHandler = new AnnotationHandler(){};
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Entity.class);
+
+    /**
+     * Java模板默认路径
+     *
+     * @since 3.5.6
+     */
+    @Getter
+    private String javaTemplate = ConstVal.TEMPLATE_ENTITY_JAVA;
+
+    /**
+     * Kotlin模板默认撸
+     */
+    @Getter
+    private String kotlinTemplate = ConstVal.TEMPLATE_ENTITY_KT;
 
     private Entity() {
     }
@@ -63,17 +89,19 @@ public class Entity implements ITemplate {
     /**
      * 自定义基础的Entity类，公共字段
      */
+    @Getter
     private final Set<String> superEntityColumns = new HashSet<>();
 
     /**
      * 自定义忽略字段
-     * https://github.com/baomidou/generator/issues/46
+     * <a href="https://github.com/baomidou/generator/issues/46">...</a>
      */
     private final Set<String> ignoreColumns = new HashSet<>();
 
     /**
      * 实体是否生成 serialVersionUID
      */
+    @Getter
     private boolean serialVersionUID = true;
 
     /**
@@ -81,32 +109,35 @@ public class Entity implements ITemplate {
      * -----------------------------------<br>
      * public static final String ID = "test_id";
      */
+    @Getter
     private boolean columnConstant;
 
     /**
-     * 【实体】是否为链式模型（默认 false）<br>
-     * -----------------------------------<br>
-     * public User setName(String name) { this.name = name; return this; }
+     * 【实体】是否为链式模型（默认 false）
      *
      * @since 3.3.2
      */
+    @Getter
     private boolean chain;
 
     /**
      * 【实体】是否为lombok模型（默认 false）<br>
      * <a href="https://projectlombok.org/">document</a>
      */
+    @Getter
     private boolean lombok;
 
     /**
      * Boolean类型字段是否移除is前缀（默认 false）<br>
      * 比如 : 数据库字段名称 : 'is_xxx',类型为 : tinyint. 在映射实体的时候则会去掉is,在实体类中映射最终结果为 xxx
      */
+    @Getter
     private boolean booleanColumnRemoveIsPrefix;
 
     /**
      * 是否生成实体时，生成字段注解（默认 false）
      */
+    @Getter
     private boolean tableFieldAnnotationEnable;
 
     /**
@@ -158,6 +189,7 @@ public class Entity implements ITemplate {
      *
      * @since 3.5.0
      */
+    @Getter
     private boolean activeRecord;
 
     /**
@@ -175,6 +207,23 @@ public class Entity implements ITemplate {
     private ConverterFileName converterFileName = (entityName -> entityName);
 
     /**
+     * 是否覆盖已有文件（默认 false）
+     *
+     * @since 3.5.2
+     */
+    @Getter
+    private boolean fileOverride;
+
+
+    /**
+     * 是否生成
+     *
+     * @since 3.5.6
+     */
+    @Getter
+    private boolean generate = true;
+
+    /**
      * <p>
      * 父类 Class 反射属性转换为公共字段
      * </p>
@@ -182,13 +231,13 @@ public class Entity implements ITemplate {
      * @param clazz 实体父类 Class
      */
     public void convertSuperEntityColumns(Class<?> clazz) {
-        List<Field> fields = TableInfoHelper.getAllFields(clazz);
+        List<Field> fields = TableInfoHelper.getAllFields(clazz, annotationHandler);
         this.superEntityColumns.addAll(fields.stream().map(field -> {
-            TableId tableId = field.getAnnotation(TableId.class);
+            TableId tableId = annotationHandler.getAnnotation(field, TableId.class);
             if (tableId != null && StringUtils.isNotBlank(tableId.value())) {
                 return tableId.value();
             }
-            TableField tableField = field.getAnnotation(TableField.class);
+            TableField tableField = annotationHandler.getAnnotation(field, TableField.class);
             if (tableField != null && StringUtils.isNotBlank(tableField.value())) {
                 return tableField.value();
             }
@@ -238,34 +287,6 @@ public class Entity implements ITemplate {
         return superClass;
     }
 
-    public Set<String> getSuperEntityColumns() {
-        return this.superEntityColumns;
-    }
-
-    public boolean isSerialVersionUID() {
-        return serialVersionUID;
-    }
-
-    public boolean isColumnConstant() {
-        return columnConstant;
-    }
-
-    public boolean isChain() {
-        return chain;
-    }
-
-    public boolean isLombok() {
-        return lombok;
-    }
-
-    public boolean isBooleanColumnRemoveIsPrefix() {
-        return booleanColumnRemoveIsPrefix;
-    }
-
-    public boolean isTableFieldAnnotationEnable() {
-        return tableFieldAnnotationEnable;
-    }
-
     @Nullable
     public String getVersionColumnName() {
         return versionColumnName;
@@ -294,10 +315,6 @@ public class Entity implements ITemplate {
     @NotNull
     public NamingStrategy getNaming() {
         return naming;
-    }
-
-    public boolean isActiveRecord() {
-        return activeRecord;
     }
 
     @Nullable
@@ -520,7 +537,11 @@ public class Entity implements ITemplate {
          * @since 3.5.0
          */
         public Builder addSuperEntityColumns(@NotNull String... superEntityColumns) {
-            this.entity.superEntityColumns.addAll(Arrays.asList(superEntityColumns));
+            return addSuperEntityColumns(Arrays.asList(superEntityColumns));
+        }
+
+        public Builder addSuperEntityColumns(@NotNull List<String> superEntityColumnList) {
+            this.entity.superEntityColumns.addAll(superEntityColumnList);
             return this;
         }
 
@@ -532,20 +553,23 @@ public class Entity implements ITemplate {
          * @since 3.5.0
          */
         public Builder addIgnoreColumns(@NotNull String... ignoreColumns) {
-            this.entity.ignoreColumns.addAll(Arrays.asList(ignoreColumns));
+            return addIgnoreColumns(Arrays.asList(ignoreColumns));
+        }
+
+        public Builder addIgnoreColumns(@NotNull List<String> ignoreColumnList) {
+            this.entity.ignoreColumns.addAll(ignoreColumnList);
             return this;
         }
 
         /**
          * 添加表字段填充
          *
-         * @param tableFill 填充字段
+         * @param tableFills 填充字段
          * @return this
          * @since 3.5.0
          */
-        public Builder addTableFills(@NotNull IFill... tableFill) {
-            this.entity.tableFillList.addAll(Arrays.asList(tableFill));
-            return this;
+        public Builder addTableFills(@NotNull IFill... tableFills) {
+            return addTableFills(Arrays.asList(tableFills));
         }
 
         /**
@@ -593,6 +617,63 @@ public class Entity implements ITemplate {
          */
         public Builder formatFileName(String format) {
             return convertFileName((entityName) -> String.format(format, entityName));
+        }
+
+        /**
+         * 覆盖已有文件（该方法后续会删除，替代方法为enableFileOverride方法）
+         *
+         * @see #enableFileOverride()
+         */
+        @Deprecated
+        public Builder fileOverride() {
+            LOGGER.warn("fileOverride方法后续会删除，替代方法为enableFileOverride方法");
+            this.entity.fileOverride = true;
+            return this;
+        }
+
+        /**
+         * 覆盖已有文件
+         *
+         * @since 3.5.3
+         */
+        public Builder enableFileOverride() {
+            this.entity.fileOverride = true;
+            return this;
+        }
+
+        /**
+         * 指定模板路径
+         *
+         * @param template 模板路径
+         * @return this
+         * @since 3.5.6
+         */
+        public Builder javaTemplate(String template) {
+            this.entity.javaTemplate = template;
+            return this;
+        }
+
+        /**
+         * 指定模板路径
+         *
+         * @param template 模板路径
+         * @return this
+         * @since 3.5.6
+         */
+        public Builder kotlinTemplatePath(String template) {
+            this.entity.kotlinTemplate = template;
+            return this;
+        }
+
+        /**
+         * 禁用实体生成
+         *
+         * @return this
+         * @since 3.5.6
+         */
+        public Builder disable() {
+            this.entity.generate = false;
+            return this;
         }
 
         public Entity get() {

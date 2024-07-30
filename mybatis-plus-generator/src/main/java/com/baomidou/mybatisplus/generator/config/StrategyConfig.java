@@ -1,26 +1,28 @@
 /*
- * Copyright (c) 2011-2021, baomidou (jobob@qq.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.baomidou.mybatisplus.generator.config;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.config.builder.*;
 import com.baomidou.mybatisplus.generator.config.po.LikeTable;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +47,7 @@ public class StrategyConfig {
     /**
      * 是否跳过视图（默认 false）
      */
+    @Getter
     private boolean skipView;
 
     /**
@@ -92,11 +95,13 @@ public class StrategyConfig {
      *
      * @since 3.3.1
      */
+    @Getter
     private boolean enableSqlFilter = true;
 
     /**
      * 启用 schema 默认 false
      */
+    @Getter
     private boolean enableSchema;
 
     /**
@@ -108,6 +113,9 @@ public class StrategyConfig {
 
     /**
      * 不包含表名
+     * <p>
+     * 只在{@link com.baomidou.mybatisplus.generator.query.SQLQuery}模式下生效.
+     * </p>
      *
      * @since 3.3.0
      */
@@ -128,6 +136,8 @@ public class StrategyConfig {
     private Mapper mapper;
 
     private Service service;
+
+    private IOutputFile outputFile = (path, ot) -> new File(path);
 
     /**
      * 实体配置构建者
@@ -254,8 +264,8 @@ public class StrategyConfig {
      * @since 3.5.0
      */
     public void validate() {
-        boolean isInclude = this.getInclude().size() > 0;
-        boolean isExclude = this.getExclude().size() > 0;
+        boolean isInclude = !this.getInclude().isEmpty();
+        boolean isExclude = !this.getExclude().isEmpty();
         if (isInclude && isExclude) {
             throw new IllegalArgumentException("<strategy> 标签中 <include> 与 <exclude> 只能配置一项！");
         }
@@ -313,10 +323,6 @@ public class StrategyConfig {
         return isCapitalMode;
     }
 
-    public boolean isSkipView() {
-        return skipView;
-    }
-
     @NotNull
     public Set<String> getTablePrefix() {
         return tablePrefix;
@@ -347,14 +353,6 @@ public class StrategyConfig {
         return exclude;
     }
 
-    public boolean isEnableSqlFilter() {
-        return enableSqlFilter;
-    }
-
-    public boolean isEnableSchema() {
-        return enableSchema;
-    }
-
     @Nullable
     public LikeTable getLikeTable() {
         return likeTable;
@@ -363,6 +361,11 @@ public class StrategyConfig {
     @Nullable
     public LikeTable getNotLikeTable() {
         return notLikeTable;
+    }
+
+    @NotNull
+    public IOutputFile getOutputFile() {
+        return outputFile;
     }
 
     /**
@@ -432,7 +435,11 @@ public class StrategyConfig {
          * @since 3.5.0
          */
         public Builder addTablePrefix(@NotNull String... tablePrefix) {
-            this.strategyConfig.tablePrefix.addAll(Arrays.asList(tablePrefix));
+            return addTablePrefix(Arrays.asList(tablePrefix));
+        }
+
+        public Builder addTablePrefix(@NotNull List<String> tablePrefixList) {
+            this.strategyConfig.tablePrefix.addAll(tablePrefixList);
             return this;
         }
 
@@ -444,7 +451,11 @@ public class StrategyConfig {
          * @since 3.5.1
          */
         public Builder addTableSuffix(String... tableSuffix) {
-            this.strategyConfig.tableSuffix.addAll(Arrays.asList(tableSuffix));
+            return addTableSuffix(Arrays.asList(tableSuffix));
+        }
+
+        public Builder addTableSuffix(@NotNull List<String> tableSuffixList) {
+            this.strategyConfig.tableSuffix.addAll(tableSuffixList);
             return this;
         }
 
@@ -456,7 +467,11 @@ public class StrategyConfig {
          * @since 3.5.0
          */
         public Builder addFieldPrefix(@NotNull String... fieldPrefix) {
-            this.strategyConfig.fieldPrefix.addAll(Arrays.asList(fieldPrefix));
+            return addFieldPrefix(Arrays.asList(fieldPrefix));
+        }
+
+        public Builder addFieldPrefix(@NotNull List<String> fieldPrefix) {
+            this.strategyConfig.fieldPrefix.addAll(fieldPrefix);
             return this;
         }
 
@@ -468,7 +483,11 @@ public class StrategyConfig {
          * @since 3.5.1
          */
         public Builder addFieldSuffix(@NotNull String... fieldSuffix) {
-            this.strategyConfig.fieldSuffix.addAll(Arrays.asList(fieldSuffix));
+            return addFieldSuffix(Arrays.asList(fieldSuffix));
+        }
+
+        public Builder addFieldSuffix(@NotNull List<String> fieldSuffixList) {
+            this.strategyConfig.fieldSuffix.addAll(fieldSuffixList);
             return this;
         }
 
@@ -489,6 +508,11 @@ public class StrategyConfig {
             return this;
         }
 
+        public Builder addInclude(@NotNull String include) {
+            this.strategyConfig.include.addAll(Arrays.asList(include.split(",")));
+            return this;
+        }
+
         /**
          * 增加排除表
          *
@@ -497,7 +521,11 @@ public class StrategyConfig {
          * @since 3.5.0
          */
         public Builder addExclude(@NotNull String... exclude) {
-            this.strategyConfig.exclude.addAll(Arrays.asList(exclude));
+            return addExclude(Arrays.asList(exclude));
+        }
+
+        public Builder addExclude(@NotNull List<String> excludeList) {
+            this.strategyConfig.exclude.addAll(excludeList);
             return this;
         }
 
@@ -518,6 +546,16 @@ public class StrategyConfig {
          */
         public Builder notLikeTable(@NotNull LikeTable notLikeTable) {
             this.strategyConfig.notLikeTable = notLikeTable;
+            return this;
+        }
+
+        /**
+         * 输出文件处理
+         *
+         * @return this
+         */
+        public Builder outputFile(@NotNull IOutputFile outputFile) {
+            this.strategyConfig.outputFile = outputFile;
             return this;
         }
 

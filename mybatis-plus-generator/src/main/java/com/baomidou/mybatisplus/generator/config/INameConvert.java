@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2011-2021, baomidou (jobob@qq.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.baomidou.mybatisplus.generator.config;
 
@@ -35,7 +35,6 @@ public interface INameConvert {
      * 执行实体名称转换
      *
      * @param tableInfo 表信息对象
-     * @return
      */
     @NotNull
     String entityNameConvert(@NotNull TableInfo tableInfo);
@@ -44,7 +43,6 @@ public interface INameConvert {
      * 执行属性名称转换
      *
      * @param field 表字段对象，如果属性表字段命名不一致注意 convert 属性的设置
-     * @return
      */
     @NotNull
     String propertyNameConvert(@NotNull TableField field);
@@ -70,17 +68,17 @@ public interface INameConvert {
 
         @Override
         public @NotNull String propertyNameConvert(@NotNull TableField field) {
-            return processName(field.getName(), strategyConfig.entity().getNaming(), strategyConfig.getFieldPrefix(), strategyConfig.getFieldSuffix());
+            return processName(field.getName(), strategyConfig.entity().getColumnNaming(), strategyConfig.getFieldPrefix(), strategyConfig.getFieldSuffix());
         }
 
         private String processName(String name, NamingStrategy strategy, Set<String> prefix, Set<String> suffix) {
             String propertyName = name;
             // 删除前缀
-            if (prefix.size() > 0) {
+            if (!prefix.isEmpty()) {
                 propertyName = NamingStrategy.removePrefix(propertyName, prefix);
             }
             // 删除后缀
-            if (suffix.size() > 0) {
+            if (!suffix.isEmpty()) {
                 propertyName = NamingStrategy.removeSuffix(propertyName, suffix);
             }
             if (StringUtils.isBlank(propertyName)) {

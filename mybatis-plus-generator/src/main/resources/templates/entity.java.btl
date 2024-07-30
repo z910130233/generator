@@ -3,7 +3,9 @@ package ${package.Entity};
 <% for(pkg in table.importPackages){ %>
 import ${pkg};
 <% } %>
-<% if(swagger){ %>
+<% if(springdoc){ %>
+import io.swagger.v3.oas.annotations.media.Schema;
+<% }else if(swagger){ %>
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 <% } %>
@@ -33,7 +35,9 @@ import lombok.experimental.Accessors;
 <% if(table.convert){ %>
 @TableName("${schemaName}${table.name}")
 <% } %>
-<% if(swagger){ %>
+<% if(springdoc){ %>
+@Schema(name = "${entity}", description = "${table.comment!''}")
+<% }else if(swagger){ %>
 @ApiModel(value = "${entity}对象", description = "${table.comment!''}")
 <% } %>
 <% if(isNotEmpty(superEntityClass)){ %>
@@ -49,16 +53,19 @@ public class ${entity} {
 
     private static final long serialVersionUID = 1L;
 <% } %>
+<% var keyPropertyName; %>
 <% /** -----------BEGIN 字段循环遍历----------- **/ %>
 <% for(field in table.fields){ %>
     <%
     if(field.keyFlag){
-        var keyPropertyName = field.propertyName;
+        keyPropertyName = field.propertyName;
     }
     %>
-
     <% if(isNotEmpty(field.comment)){ %>
-        <% if(swagger){ %>
+
+        <% if(springdoc){ %>
+    @Schema(description = "${field.comment}")
+        <% }else if(swagger){ %>
     @ApiModelProperty(value = "${field.comment}")
         <% }else{ %>
     /**
@@ -104,7 +111,6 @@ public class ${entity} {
     private ${field.propertyType} ${field.propertyName};
 <% } %>
 <% /** -----------END 字段循环遍历----------- **/ %>
-
 <% if(!entityLombokModel){ %>
     <% for(field in table.fields){ %>
         <%
@@ -115,6 +121,7 @@ public class ${entity} {
             getprefix='get';
         }
         %>
+
     public ${field.propertyType} ${getprefix}${field.capitalName}() {
         return ${field.propertyName};
     }
@@ -129,16 +136,16 @@ public class ${entity} {
         return this;
         <% } %>
     }
-
     <% } %>
 <% } %>
 <% if(entityColumnConstant){ %>
    <% for(field in table.fields){ %>
-    public static final String ${strutil.toUpperCase(field.name)} = "${field.name}";
 
+    public static final String ${strutil.toUpperCase(field.name)} = "${field.name}";
    <% } %>
 <% } %>
 <% if(activeRecord){ %>
+
     @Override
     public Serializable pkVal() {
     <% if(isNotEmpty(keyPropertyName)){ %>
@@ -147,17 +154,17 @@ public class ${entity} {
         return null;
     <% } %>
     }
-
 <% } %>
 <% if(!entityLombokModel){ %>
+
     @Override
     public String toString() {
         return "${entity}{" +
     <% for(field in table.fields){ %>
        <% if(fieldLP.index==0){ %>
-        "${field.propertyName}=" + ${field.propertyName} +
+        "${field.propertyName} = " + ${field.propertyName} +
        <% }else{ %>
-        ", ${field.propertyName}=" + ${field.propertyName} +
+        ", ${field.propertyName} = " + ${field.propertyName} +
        <% } %>
     <% } %>
         "}";

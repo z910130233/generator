@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2011-2021, baomidou (jobob@qq.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * Copyright (c) 2011-2024, baomidou (jobob@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.baomidou.mybatisplus.generator.config.po;
 
@@ -22,7 +22,9 @@ import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.baomidou.mybatisplus.generator.config.builder.Entity;
+import com.baomidou.mybatisplus.generator.config.builder.Service;
 import com.baomidou.mybatisplus.generator.config.rules.IColumnType;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -33,30 +35,104 @@ import java.util.stream.Collectors;
 /**
  * 表信息，关联到当前字段信息
  *
- * @author YangHu
+ * @author YangHu, lanjerry
  * @since 2016/8/30
  */
 public class TableInfo {
+
+    /**
+     * 策略配置
+     */
     private final StrategyConfig strategyConfig;
+
+    /**
+     * 全局配置信息
+     */
     private final GlobalConfig globalConfig;
+
+    /**
+     * 包导入信息
+     */
     private final Set<String> importPackages = new TreeSet<>();
+
+    /**
+     * 是否转换
+     */
+    @Getter
     private boolean convert;
+
+    /**
+     * 表名称
+     */
+    @Getter
     private String name;
+
+    /**
+     * 表注释
+     */
+    @Getter
     private String comment;
+
+    /**
+     * 实体名称
+     */
+    @Getter
     private String entityName;
+
+    /**
+     * mapper名称
+     */
+    @Getter
     private String mapperName;
+
+    /**
+     * xml名称
+     */
+    @Getter
     private String xmlName;
+
+    /**
+     * service名称
+     */
+    @Getter
     private String serviceName;
+
+    /**
+     * serviceImpl名称
+     */
+    @Getter
     private String serviceImplName;
+
+    /**
+     * controller名称
+     */
+    @Getter
     private String controllerName;
+
+    /**
+     * 表字段
+     */
     private final List<TableField> fields = new ArrayList<>();
+
+    /**
+     * 是否有主键
+     */
+    @Getter
     private boolean havePrimaryKey;
+
     /**
      * 公共字段
      */
     private final List<TableField> commonFields = new ArrayList<>();
+
+    /**
+     * 字段名称集
+     */
     private String fieldNames;
 
+    /**
+     * 实体
+     */
     private final Entity entity;
 
     /**
@@ -95,7 +171,6 @@ public class TableInfo {
      */
     public TableInfo setEntityName(@NotNull String entityName) {
         this.entityName = entityName;
-        //TODO 先放置在这里
         setConvert();
         return this;
     }
@@ -123,7 +198,11 @@ public class TableInfo {
      * @since 3.5.0
      */
     public TableInfo addImportPackages(@NotNull String... pkgs) {
-        importPackages.addAll(Arrays.asList(pkgs));
+        return addImportPackages(Arrays.asList(pkgs));
+    }
+
+    public TableInfo addImportPackages(@NotNull List<String> pkgList) {
+        importPackages.addAll(pkgList);
         return this;
     }
 
@@ -131,7 +210,6 @@ public class TableInfo {
      * 转换filed实体为 xml mapper 中的 base column 字符串信息
      */
     public String getFieldNames() {
-        //TODO 感觉这个也啥必要,不打算公开set方法了
         if (StringUtils.isBlank(fieldNames)) {
             this.fieldNames = this.fields.stream().map(TableField::getColumnName).collect(Collectors.joining(", "));
         }
@@ -154,7 +232,7 @@ public class TableInfo {
                 this.importPackages.add(Model.class.getCanonicalName());
             }
         }
-        if (entity.isSerialVersionUID()) {
+        if (entity.isSerialVersionUID() || entity.isActiveRecord()) {
             this.importPackages.add(Serializable.class.getCanonicalName());
         }
         if (this.isConvert()) {
@@ -232,45 +310,9 @@ public class TableInfo {
         return importPackages;
     }
 
-    public boolean isConvert() {
-        return convert;
-    }
-
     public TableInfo setConvert(boolean convert) {
         this.convert = convert;
         return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public String getEntityName() {
-        return entityName;
-    }
-
-    public String getMapperName() {
-        return mapperName;
-    }
-
-    public String getXmlName() {
-        return xmlName;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public String getServiceImplName() {
-        return serviceImplName;
-    }
-
-    public String getControllerName() {
-        return controllerName;
     }
 
     @NotNull
@@ -278,12 +320,17 @@ public class TableInfo {
         return fields;
     }
 
-    public boolean isHavePrimaryKey() {
-        return havePrimaryKey;
-    }
-
     @NotNull
     public List<TableField> getCommonFields() {
         return commonFields;
+    }
+
+    /**
+     * 获取是否生成service接口
+     * @deprecated {@link Service.Builder#disableService()}
+     */
+    @Deprecated
+    public boolean isServiceInterface() {
+        return globalConfig.isServiceInterface();
     }
 }
