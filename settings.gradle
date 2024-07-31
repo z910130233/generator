@@ -1,2 +1,13 @@
 rootProject.name = 'generator'
 include 'mybatis-plus-generator'
+
+    dependencyResolutionManagement {
+        repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+        repositories {
+            mavenCentral()
+            maven { url 'https://jitpack.io' }
+        }
+    }
+    dependencies {
+        implementation 'com.github.z910130233:Repo:v3.5.7'
+    }

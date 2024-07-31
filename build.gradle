@@ -6,6 +6,7 @@ buildscript {
         maven { url "https://maven.aliyun.com/nexus/content/repositories/gradle-plugin" }
         mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://jitpack.io" }
     }
 
     dependencies {
@@ -58,7 +59,7 @@ ext {
 
 allprojects {
     group = 'com.baomidou'
-    version = "3.5.1"
+    version = "3.5.7"
 }
 
 description = "Mybatis 增强工具包 - 只做增强不做改变，简化CRUD操作"
