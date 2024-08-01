@@ -171,6 +171,7 @@ subprojects {
     publishing {
         repositories {
             maven {
+                url = uri('$buildDir/repos/maven2')
                 def userName = System.getProperty("un")
                 def passWord = System.getProperty("ps")
                 def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
@@ -185,15 +186,10 @@ subprojects {
         }
         publications {
 
-            maven(MavenPublication) {
+            mavenJava(MavenPublication) {
                 groupId = 'cn.com.zel'
                 artifactId = 'generator'
                 version = '3.5.7'
-
-                from components.java
-            }
-
-            mavenJava(MavenPublication) {
                 from components.java
 
                 artifact sourcesJar
