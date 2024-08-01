@@ -185,6 +185,14 @@ subprojects {
         }
         publications {
 
+            maven(MavenPublication) {
+                groupId = 'cn.com.zel'
+                artifactId = 'generator'
+                version = '3.5.7'
+
+                from components.java
+            }
+
             mavenJava(MavenPublication) {
                 from components.java
 
